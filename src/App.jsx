@@ -3,16 +3,10 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-const welcome = {
-  greeting: "Hey",
-  title: "React",
-};
-
 const App = () => {
-  const [count, setCount] = useState(0)
-  const [searchTerm, setSearchTerm] = useState("")
+  console.log("App renders")
 
-  const list = [ 
+  const stories = [ 
     {
       title: "React",
       url: "https://reactjs.org/",
@@ -31,14 +25,12 @@ const App = () => {
     },
   ]
 
+  const [searchTerm, setSearchTerm] = useState("")
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value)
     console.log("Search Term:", event.target.value)
   }
-
-  const filteredList = list.filter((item) =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase())
-  )
 
   return (
     <>
@@ -55,25 +47,21 @@ const App = () => {
       <h1>Vite + React</h1>
 
       <div className="card">
-        <button onClick={() => setCount(count + 1)}>
-          count is {count}
+        <button onClick={() => setSearchTerm("")}>
+          Reset Search
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
       </div>
 
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-
       <Search searchTerm={searchTerm} onSearch={handleSearch} />
-      <Lista list={filteredList} />
+      <p>Searching for: {searchTerm}</p>
+      <List list={stories} />
     </>
   )
 }
 
 const Search = ({ searchTerm, onSearch }) => {
+  console.log("Search renders")
+
   return (
     <div>
       <label htmlFor="search">Search: </label>
@@ -87,18 +75,30 @@ const Search = ({ searchTerm, onSearch }) => {
   )
 }
 
-const Lista = ({ list }) => (
-  <div>
-    <p>This is my list:</p>
-    <ul>
-      {list.map((item) => (
-        <li key={item.objectID}>
-          <a href={item.url}>{item.title}</a> — the author is {item.author}, comments: {item.num_comments}, points: {item.points}
-        </li>
-      ))}
-    </ul>
-  </div>
-)
+const List = ({ list }) => {
+  console.log("List renders")
 
-export default App
+  return (
+    <div>
+      <p>This is my list:</p>
+      <ul>
+        {list.map((item) => (
+          <Item key={item.objectID} item={item} />
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+const Item = ({ item }) => {
+  console.log("Item renders")
+
+  return (
+    <li>
+      <a href={item.url}>{item.title}</a> — the author is {item.author}, comments: {item.num_comments}, points: {item.points}
+    </li>
+  )
+}
+
+export default App 
 

@@ -2,10 +2,15 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import * as React from 'react'
 
-const App = () => {
-  console.log("App renders")
 
+function getTitle(title) {
+  return title;
+}
+const App = () => { 
+  const [count, setCount] = useState(0)
+  
   const stories = [
     {
       title: "React",
@@ -23,87 +28,77 @@ const App = () => {
       points: 5,
       objectID: 1,
     },
-  ]
+  ];
+  const [searchTerm,setSearchTerm]= React.useState(localStorage.getItem('search') ||'React');
+  React.useEffect(()=>{
+    localStorage.setItem('search', searchTerm);},[searchTerm]);
 
-  const [searchTerm, setSearchTerm] = useState("")
 
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value)
-    console.log("Search Term:", event.target.value)
-  }
-
-  const filteredStories = stories.filter((story) =>
+  
+  const handleSearch = (event) =>{
+    setSearchTerm(event.target.value);
+    console.log(event.target.value);
+    localStorage.setItem('search',event.target.value);
+  };
+  const searchedStories = stories.filter((story)=>
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+);
 
-  return (
-    <>
-      <div>
-        <h1>Hello World</h1>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <h1>Vite + React</h1>
-
-      <div className="card">
-        <button onClick={() => setSearchTerm("")}>
-          Reset Search
-        </button>
-      </div>
-
-      <Search searchTerm={searchTerm} onSearch={handleSearch} />
-      <p>Searching for: {searchTerm}</p>
-      <List list={filteredStories} />
-    </>
-  )
-}
-
-const Search = ({ searchTerm, onSearch }) => {
-  console.log("Search renders")
 
   return (
     <div>
-      <label htmlFor="search">Search: </label>
-      <input
-        id="search"
-        type="text"
-        value={searchTerm}
-        onChange={onSearch}
-      />
+      <h1>Hello {getTitle("react")}</h1>
+      <Search search={searchTerm} onSearch={handleSearch} />
+      <hr />
+      <List list={searchedStories} />
     </div>
-  )
-}
+);
+};
 
-const List = ({ list }) => {
-  console.log("List renders")
-
-  return (
+const Search = ({search, onSearch}) => {
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const handleChange= (event) => {
+    setSearchTerm(event.target.value);
+    onSearch(event);  
+  };
+    
+  return(
     <div>
-      <p>This is my list:</p>
-      <ul>
-        {list.map((item) => (
+      <label htmlfor="search">Search:</label>
+      <input id="search" type="text" value={search} onChange={onSearch} />
+      <p>
+        Searching for <strong>{searchTerm}</strong>
+      </p>
+    </div>
+  );
+};
+const List = ({list}) =>(
+  
+
+  
+    <ul>
+        {list.map((item)=> (
           <Item key={item.objectID} item={item} />
         ))}
-      </ul>
-    </div>
-  )
-}
+        </ul>
+);
+    
+    const Item=({item}) => (
+      <li>
+        <span>
+              <a href={item.url}> {item.title}</a></span>
+              <span> {item.author}</span>
+              <span> {item.num_comments}</span>
+              <span> {item.points}</span>
+              </li>
+          
+        );
+      
+  
+  
 
-const Item = ({ item }) => {
-  console.log("Item renders")
 
-  return (
-    <li>
-      <a href={item.url}>{item.title}</a> — the author is {item.author}, comments: {item.num_comments}, points: {item.points}
-    </li>
-  )
-}
+export default App;
 
-export default App
 
 

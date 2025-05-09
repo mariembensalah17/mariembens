@@ -6,7 +6,7 @@ import './App.css'
 const App = () => {
   console.log("App renders")
 
-  const stories = [ 
+  const stories = [
     {
       title: "React",
       url: "https://reactjs.org/",
@@ -32,6 +32,10 @@ const App = () => {
     console.log("Search Term:", event.target.value)
   }
 
+  const filteredStories = stories.filter((story) =>
+    story.title.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
     <>
       <div>
@@ -54,7 +58,7 @@ const App = () => {
 
       <Search searchTerm={searchTerm} onSearch={handleSearch} />
       <p>Searching for: {searchTerm}</p>
-      <List list={stories} />
+      <List list={filteredStories} />
     </>
   )
 }
@@ -100,5 +104,6 @@ const Item = ({ item }) => {
   )
 }
 
-export default App 
+export default App
+
 

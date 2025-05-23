@@ -11,7 +11,7 @@ function getTitle(title) {
 const App = () => { 
   const [count, setCount] = useState(0)
   
-  const stories = [
+  const initialStories = [
     {
       title: "React",
       url: "https://reactjs.org/",
@@ -29,6 +29,13 @@ const App = () => {
       objectID: 1,
     },
   ];
+  const[stories, setStories] = React.useState(initialStories);
+  const handleRemoveStory = (item) => {
+    const newStories = stories.filter(
+      (story) => item.objectID !== story.objectID
+    );
+    setStories(newStories);
+  };
   const [searchTerm,setSearchTerm]= React.useState(localStorage.getItem('search') ||'React');
   React.useEffect(()=>{
     localStorage.setItem('search', searchTerm);},[searchTerm]);
@@ -48,48 +55,56 @@ const App = () => {
   return (
     <div>
       <h1>Hello {getTitle("react")}</h1>
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel id="search" value={searchTerm} onInputChange={handleSearch}>
+      <strong>Search:</strong>
+      </InputWithLabel>
       <hr />
-      <List list={searchedStories} />
+      <List list={searchedStories} onRemoveItem={handleRemoveStory} />
     </div>
 );
 };
 
-const Search = ({search, onSearch}) => {
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const handleChange= (event) => {
-    setSearchTerm(event.target.value);
-    onSearch(event);  
-  };
-    
-  return(
-    <div>
-      <label htmlfor="search">Search:</label>
-      <input id="search" type="text" value={search} onChange={onSearch} />
-      <p>
-        Searching for <strong>{searchTerm}</strong>
-      </p>
-    </div>
-  );
-};
-const List = ({list}) =>(
+const InputWithLabel = ({
+  id,
+  label,
+  value,
+  type= 'text',
+  onInputChange,
+  children,
+}) => (
+  <>
+  <label htmlFor={id}>{children}</label>
+  &nbsp;
+  <input id={id}
+  type={type}
+  value={value}
+  onChange={onInputChange}
+  />
+  </>
+);
+
+const List = ({list, onRemoveItem}) =>(
   
 
   
     <ul>
         {list.map((item)=> (
-          <Item key={item.objectID} item={item} />
+          <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
         ))}
         </ul>
 );
     
-    const Item=({item}) => (
+    const Item=({item, onRemoveItem}) => (
       <li>
         <span>
               <a href={item.url}> {item.title}</a></span>
               <span> {item.author}</span>
               <span> {item.num_comments}</span>
               <span> {item.points}</span>
+              <span>
+                <button type="button" onClick={() => onRemoveItem(item)}>
+                Dismiss</button>
+              </span>
               </li>
           
         );
@@ -99,6 +114,11 @@ const List = ({list}) =>(
 
 
 export default App;
+
+
+
+
+
 
 
 

@@ -4,7 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import * as React from 'react'
 
-
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 function getTitle(title) {
   return title;
 }
@@ -29,6 +29,8 @@ const App = () => {
       objectID: 1,
     },
   ];
+  
+
   const[stories, setStories] = React.useState(initialStories);
   const handleRemoveStory = (item) => {
     const newStories = stories.filter(
@@ -39,6 +41,34 @@ const App = () => {
   const [searchTerm,setSearchTerm]= React.useState(localStorage.getItem('search') ||'React');
   React.useEffect(()=>{
     localStorage.setItem('search', searchTerm);},[searchTerm]);
+    
+    const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
+
+    const handleSearchSubmit = () => {
+      setUrl(`${API_ENDPOINT}${searchTerm}`);
+    };
+    
+    const [isError, setIsError] = React.useState(false);
+    const [isloading, setIsloading] = React.useState(false);
+    
+    React.useEffect(() => {
+    
+    setIsloading(true);
+    fetch(url)
+    .then((response) => response.json())
+    .then ((result) => {
+      setIsloading(false);
+      setStories(result.hits);
+    })
+    
+    
+    .catch(() => {
+      setIsloading(false);
+      setIsError(true);
+
+    });
+
+  },[url]);
 
 
   
@@ -47,9 +77,7 @@ const App = () => {
     console.log(event.target.value);
     localStorage.setItem('search',event.target.value);
   };
-  const searchedStories = stories.filter((story)=>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  
 
 
   return (
@@ -58,8 +86,20 @@ const App = () => {
       <InputWithLabel id="search" value={searchTerm} onInputChange={handleSearch}>
       <strong>Search:</strong>
       </InputWithLabel>
+      <button
+      type="button"
+      disabled={!searchTerm}
+      onClick={handleSearchSubmit}
+      >
+      Submit
+      </button>
       <hr />
-      <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+      {isError && <p>Something went wrong ...</p>}
+      {isloading ? (
+        <p>loading ...</p>
+      ) : (
+        <List list={stories} onRemoveItem={handleRemoveStory} />
+      )}
     </div>
 );
 };
@@ -114,6 +154,8 @@ const List = ({list, onRemoveItem}) =>(
 
 
 export default App;
+
+
 
 
 
